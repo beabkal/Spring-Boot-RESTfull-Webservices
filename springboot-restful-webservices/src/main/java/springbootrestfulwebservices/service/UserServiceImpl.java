@@ -1,10 +1,11 @@
 package springbootrestfulwebservices.service;
 
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import springbootrestfulwebservices.dto.UserDTO;
 import springbootrestfulwebservices.entity.User;
-import springbootrestfulwebservices.mapper.UserMapper;
+import springbootrestfulwebservices.mapper.AutoUserMapper;
 import springbootrestfulwebservices.repository.UserRepository;
 
 import java.util.List;
@@ -16,16 +17,17 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
+    private ModelMapper modelMapper;
 
     @Override
     public UserDTO createUser(UserDTO user) {
 
 //        Convert UserDTO to User
-        User newUser = UserMapper.mapToUser(user);
+        User newUser = modelMapper.map(user, User.class);
         User savedUser = userRepository.save(newUser);
 
 //        Convert User to UserDTO
-        UserDTO savedUserDTO = UserMapper.mapToUserDTO(savedUser);
+        UserDTO savedUserDTO = modelMapper.map(savedUser, UserDTO.class);
         return savedUserDTO;
     }
 
@@ -39,9 +41,9 @@ public class UserServiceImpl implements UserService {
 
         System.out.println("Updated user: \n" + updatedUserDTO);
 
-        User updatedUser = userRepository.save(UserMapper.mapToUser(updatedUserDTO));
+        User updatedUser = userRepository.save(AutoUserMapper.MAPPER.mapToUser(updatedUserDTO));
 
-        return UserMapper.mapToUserDTO(updatedUser);
+        return AutoUserMapper.MAPPER.mapToUserDTO(updatedUser);
     }
 
     @Override
@@ -56,13 +58,13 @@ public class UserServiceImpl implements UserService {
         Optional<User> optionalUser = userRepository.findById(id);
 //        Convert User entity object to UserDTO object
         User user = optionalUser.get();
-        return UserMapper.mapToUserDTO(user);
+        return AutoUserMapper.MAPPER.mapToUserDTO(user);
     }
 
     @Override
     public List<UserDTO> getAllUsers() {
         List<User> userList = userRepository.findAll();
-//        Map each user from User entity to UserDTO and return a list
-        return userList.stream().map(UserMapper::mapToUserDTO).collect(Collectors.toList());
+//        Map each user from User entity to UserDTO using a model mapper and return a list
+        return userList.stream().map((user)-> AutoUserMapper.MAPPER.mapToUserDTO(user)).collect(Collectors.toList());
     }
 }
