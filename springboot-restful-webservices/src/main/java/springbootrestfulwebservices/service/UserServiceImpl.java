@@ -13,9 +13,10 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
+
     @Override
     public UserDTO createUser(UserDTO user) {
 
@@ -32,11 +33,11 @@ public class UserServiceImpl implements UserService{
     public UserDTO updateUserById(User user) {
         UserDTO updatedUserDTO = getUserById(user.getId());
 
-        if (user.getFirstName()!=null) updatedUserDTO.setFirstName(user.getFirstName());
-        if (user.getLastName()!=null) updatedUserDTO.setLastName(user.getLastName());
-        if (user.getEmail()!=null) updatedUserDTO.setEmail(user.getEmail());
+        if (user.getFirstName() != null) updatedUserDTO.setFirstName(user.getFirstName());
+        if (user.getLastName() != null) updatedUserDTO.setLastName(user.getLastName());
+        if (user.getEmail() != null) updatedUserDTO.setEmail(user.getEmail());
 
-        System.out.println("Updated user: \n"+updatedUserDTO);
+        System.out.println("Updated user: \n" + updatedUserDTO);
 
         User updatedUser = userRepository.save(UserMapper.mapToUser(updatedUserDTO));
 
@@ -59,7 +60,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<UserDTO> getAllUsers(){
+    public List<UserDTO> getAllUsers() {
         List<User> userList = userRepository.findAll();
 //        Map each user from User entity to UserDTO and return a list
         return userList.stream().map(UserMapper::mapToUserDTO).collect(Collectors.toList());
