@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springbootrestfulwebservices.dto.UserDTO;
 import springbootrestfulwebservices.entity.User;
 import springbootrestfulwebservices.service.UserService;
 
@@ -18,37 +19,31 @@ public class UserController {
 
 //    Get all users from the database
     @GetMapping()
-    public ResponseEntity<List<User>> getAllUsers(){
-        List<User> allUsers = userService.getAllUsers();
+    public ResponseEntity<List<UserDTO>> getAllUsers(){
+        List<UserDTO> allUsers = userService.getAllUsers();
 
         return ResponseEntity.ok(allUsers);
     }
     //Get a user by id
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id){
-        User user = userService.getUserById(id);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id){
+        UserDTO userDTO = userService.getUserById(id);
+
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 //    Create a new user
     @PostMapping("/create")
-    public ResponseEntity<User> createUser(@RequestBody User user){
-        User newUser = new User();
-
-        newUser.setEmail(user.getEmail());
-        newUser.setFirstName(user.getFirstName());
-        newUser.setLastName(user.getLastName());
-
-        userService.createUser(newUser);
-        System.out.println("Created user\n" + newUser.toString());
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO user){
+        UserDTO newUser = userService.createUser(user);
+        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
 
 //    Update a user by id
     @PutMapping("/{id}/update")
-    public ResponseEntity<User> updateUserById(@PathVariable Long id,
+    public ResponseEntity<UserDTO> updateUserById(@PathVariable Long id,
             @RequestBody User user){
         user.setId(id);
-        User updatedUser = userService.updateUserById(user);
+        UserDTO updatedUser = userService.updateUserById(user);
     return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
