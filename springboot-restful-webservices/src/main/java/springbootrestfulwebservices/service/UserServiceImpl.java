@@ -5,11 +5,13 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import springbootrestfulwebservices.dto.UserDTO;
 import springbootrestfulwebservices.entity.User;
+import springbootrestfulwebservices.exception.EmailAlreadyExistsException;
 import springbootrestfulwebservices.exception.ResourceNotFoundException;
 import springbootrestfulwebservices.mapper.AutoUserMapper;
 import springbootrestfulwebservices.repository.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,10 +24,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO createUser(UserDTO user) {
 
+        Optional<User> optionalUser = userRepository.findByEmail(user.getEmail());
+//        Check if email already exists and throw a custom exception
+        if(optionalUser.isPresent()){
+            throw new EmailAlreadyExistsException("Email Already exists for a user");
+        }
 //        Convert UserDTO to User
         User newUser = modelMapper.map(user, User.class);
+//        String newUserEmail = newUser.getEmail();
         User savedUser = userRepository.save(newUser);
-
 //        Convert User to UserDTO
         UserDTO savedUserDTO = modelMapper.map(savedUser, UserDTO.class);
         return savedUserDTO;
