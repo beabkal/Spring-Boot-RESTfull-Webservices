@@ -5,11 +5,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import springbootrestfulwebservices.dto.UserDTO;
 import springbootrestfulwebservices.entity.User;
+import springbootrestfulwebservices.exception.ResourceNotFoundException;
 import springbootrestfulwebservices.mapper.AutoUserMapper;
 import springbootrestfulwebservices.repository.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,16 +48,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUserById(Long id) {
+        if (getUserById(id) != null)
         userRepository.deleteById(id);
     }
 
 
     @Override
     public UserDTO getUserById(Long id) {
+        String idStr = Long.toString(id);
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("User", "id", idStr));
 
-        Optional<User> optionalUser = userRepository.findById(id);
 //        Convert User entity object to UserDTO object
-        User user = optionalUser.get();
+//        User user = optionalUser.get();
         return AutoUserMapper.MAPPER.mapToUserDTO(user);
     }
 
