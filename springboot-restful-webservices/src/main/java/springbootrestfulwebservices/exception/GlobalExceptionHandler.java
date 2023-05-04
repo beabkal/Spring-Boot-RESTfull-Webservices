@@ -34,4 +34,16 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
+//    Handles all exceptions except ResourceNotFoundException and EmailAlreadyExistsException
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorDetails> handleGlobalException(Exception exception,
+                                                                          WebRequest webRequest){
+        ErrorDetails errorDetails = new ErrorDetails(
+                LocalDate.now(),
+                exception.getMessage(),
+                webRequest.getDescription(false),
+                "Internal Server Error"
+        );
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
 }
