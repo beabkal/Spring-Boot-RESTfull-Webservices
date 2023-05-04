@@ -1,33 +1,49 @@
 package springbootrestfulwebservices.service;
 
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import springbootrestfulwebservices.dto.UserDTO;
 import springbootrestfulwebservices.entity.User;
+import springbootrestfulwebservices.mapper.AutoUserMapper;
 import springbootrestfulwebservices.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
+    private ModelMapper modelMapper;
+
     @Override
-    public User createUser(User user) {
-        return userRepository.save(user);
+    public UserDTO createUser(UserDTO user) {
+
+//        Convert UserDTO to User
+        User newUser = modelMapper.map(user, User.class);
+        User savedUser = userRepository.save(newUser);
+
+//        Convert User to UserDTO
+        UserDTO savedUserDTO = modelMapper.map(savedUser, UserDTO.class);
+        return savedUserDTO;
     }
 
     @Override
-    public User updateUserById(User user) {
-        User updatedUser = getUserById(user.getId());
+    public UserDTO updateUserById(User user) {
+        UserDTO updatedUserDTO = getUserById(user.getId());
 
-        if (user.getFirstName()!=null) updatedUser.setFirstName(user.getFirstName());
-        if (user.getLastName()!=null) updatedUser.setLastName(user.getLastName());
-        if (user.getEmail()!=null) updatedUser.setEmail(user.getEmail());
+        if (user.getFirstName() != null) updatedUserDTO.setFirstName(user.getFirstName());
+        if (user.getLastName() != null) updatedUserDTO.setLastName(user.getLastName());
+        if (user.getEmail() != null) updatedUserDTO.setEmail(user.getEmail());
 
-        System.out.println("Updated user: \n"+updatedUser);
-        return userRepository.save(updatedUser);
+        System.out.println("Updated user: \n" + updatedUserDTO);
+
+        User updatedUser = userRepository.save(AutoUserMapper.MAPPER.mapToUser(updatedUserDTO));
+
+        return AutoUserMapper.MAPPER.mapToUserDTO(updatedUser);
     }
 
     @Override
@@ -37,13 +53,18 @@ public class UserServiceImpl implements UserService{
 
 
     @Override
-    public User getUserById(Long id) {
+    public UserDTO getUserById(Long id) {
+
         Optional<User> optionalUser = userRepository.findById(id);
-        return optionalUser.get();
+//        Convert User entity object to UserDTO object
+        User user = optionalUser.get();
+        return AutoUserMapper.MAPPER.mapToUserDTO(user);
     }
 
     @Override
-    public List<User> getAllUsers(){
-        return userRepository.findAll();
+    public List<UserDTO> getAllUsers() {
+        List<User> userList = userRepository.findAll();
+//        Map each user from User entity to UserDTO using a model mapper and return a list
+        return userList.stream().map((user)-> AutoUserMapper.MAPPER.mapToUserDTO(user)).collect(Collectors.toList());
     }
 }
