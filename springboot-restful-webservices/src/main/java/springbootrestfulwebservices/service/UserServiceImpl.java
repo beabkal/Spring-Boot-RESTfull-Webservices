@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO updateUserById(User user) {
+    public UserDTO updateUserById(UserDTO user) {
         UserDTO updatedUserDTO = getUserById(user.getId());
 
         if (user.getFirstName() != null) updatedUserDTO.setFirstName(user.getFirstName());

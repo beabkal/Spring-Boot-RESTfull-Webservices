@@ -1,11 +1,11 @@
 package springbootrestfulwebservices.controller;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springbootrestfulwebservices.dto.UserDTO;
-import springbootrestfulwebservices.entity.User;
 import springbootrestfulwebservices.service.UserService;
 
 import java.util.List;
@@ -33,7 +33,7 @@ public class UserController {
     }
 //    Create a new user
     @PostMapping("/create")
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO user){
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO user){
         UserDTO newUser = userService.createUser(user);
         return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
@@ -41,7 +41,7 @@ public class UserController {
 //    Update a user by id
     @PutMapping("/{id}/update")
     public ResponseEntity<UserDTO> updateUserById(@PathVariable Long id,
-            @RequestBody User user){
+            @RequestBody @Valid UserDTO user){
         user.setId(id);
         UserDTO updatedUser = userService.updateUserById(user);
     return new ResponseEntity<>(updatedUser, HttpStatus.OK);
